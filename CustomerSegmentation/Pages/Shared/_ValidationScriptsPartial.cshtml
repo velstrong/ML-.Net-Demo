@@ -1,0 +1,105 @@
+﻿<environment include="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"
+            asp-fallback-src="~/lib/jquery-validation/dist/jquery.validate.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator"
+            crossorigin="anonymous"
+            integrity="sha256-F6h55Qw6sweK+t7SiOJX+2bpSAa3b/fnlrVCJvmEj1A=">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"
+            asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator && window.jQuery.validator.unobtrusive"
+            crossorigin="anonymous"
+            integrity="sha256-9GycpJnliUjJDVDqP0UEu/bsm9U+3dnQUH8+3W10vkY=">
+    </script>
+</environment>
+
+<script>
+    var $sentimentform = $('#sentimentform'),
+        $sentimentupload = $('#sentimentupload'),
+        $loader = $('#loader'),
+        $primaryButton = $('.btn-primary'),
+        $removeButton = $('#remove-button');
+
+    $sentimentform.on('submit', function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '@Url.Action("Analysis", "Semantic")',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (data) {
+                if (data.status == 1 && data.result ) {
+                    $('#result').show();
+                    $('#score').text(data.result.score);
+                    if (data.result.prediction) {
+                        $('#prediction').text("Positive");
+                        $('#predictionh').css("color", "green");
+                    } else {
+                        $('#prediction').text("Negative");
+                        $('#predictionh').css("color", "red");
+                    }
+                }
+            }
+        });
+
+    });
+
+    $sentimentupload.on('submit', function (e) {
+        e.preventDefault(); // stop the standard form submission
+
+        if ($(this).find('input[type="file"]').val() == '') {
+            alert('Please select a file!');
+            return;
+        }
+
+        if (confirm("Are you sure you want to train the model with the attached file? This will take a while.")) {
+            $.ajax({
+                url: '@Url.Action("Train", "Semantic")',
+                type: 'POST',
+                data: new FormData(this),
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.status == 1) {
+                        $sentimentform.show();
+                        $removeButton.show();
+                        alert('Training Complete!');
+                        $('#trainResult').text(data.result);
+                    }
+
+                    $sentimentupload[0].reset();
+                    $loader.removeClass('show');
+                },
+                error: function (xhr, error, status) {
+                    console.log(error, status);
+                    alert('An error has occurred. Please try again!');
+
+                    $loader.removeClass('show');
+                }
+            });
+
+            $loader.addClass('show');
+        }
+    });
+
+    $('#remove-button').on('click', function () {
+        if (confirm("Are you sure you want to delete the trained model?")) {
+            $.ajax({
+                url: '@Url.Action("RemoveModel", "Home")'
+            }).done(function (data) {
+                if (data.status == 1) {
+                    $form.hide();
+                    $removeButton.hide();
+                }
+                else {
+                    alert('Unable to delete model');
+                }
+            });
+        }
+    });
+</script>
