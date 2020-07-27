@@ -17,18 +17,12 @@
 
 
   <ItemGroup>
-    <Folder Include="assets\input\" />
-    <Folder Include="assets\upload\" />
-    <Folder Include="assets\output\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <None Include="wwwroot\images\tenor.gif" />
   </ItemGroup>
 
 
   <ItemGroup>
+    <ProjectReference Include="..\CreditCardFraudDetection\CreditCardFraudDetection.csproj" />
     <ProjectReference Include="..\Sentiment AnalysisML.Model\Sentiment.AnalysisML.Model.csproj" />
   </ItemGroup>
 

@@ -7,67 +7,6 @@
 @{
     var result = ViewBag.Result;
 }
-<style>
-    #upload-container {
-        height: 165px;
-        align-items: center;
-        background-color: #fafafa;
-        display: inline-flex;
-        padding: 14px;
-        border-radius: 4px;
-        border: 1px silver solid;
-        position: relative;
-    }
-
-        #upload-container * {
-            margin: 0 3px;
-        }
-
-    #upload {
-        display: flex;
-    }
-
-    #loader {
-        display: none;
-        align-items: center;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #fff;
-        border: 1px silver solid;
-        z-index: 1;
-        padding: 10px;
-        justify-content: space-between;
-        font-size: 35px;
-    }
-
-        #loader.show {
-            display: flex;
-        }
-
-        #loader::after {
-            content: "";
-            background: url(/images/tenor.gif) center no-repeat;
-            background-size: contain;
-            width: 220px;
-            height: 160px;
-        }
-
-    h1 {
-        margin-top: 50px;
-    }
-
-    h2 {
-        font-size: 25px;
-        margin-bottom: 30px;
-    }
-
-    hr {
-        margin: 50px 0;
-    }
-</style>
 
 <h1>Sentimental Analysis</h1>
 
@@ -120,5 +59,5 @@
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial-Semantic");}
 }
