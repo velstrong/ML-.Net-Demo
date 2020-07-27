@@ -25,7 +25,7 @@ namespace MachineLearningDemo.ModelBuilders
         // Set a random seed for repeatable/deterministic results across multiple trainings.
         private static MLContext mlContext = new MLContext(seed: 1);
 
-        public static string CreateModel(string trainingFilepath)
+        public static string CreateModel(string trainingFilepath,string modelPath)
         {
             // Load Data
             IDataView trainingDataView = mlContext.Data.LoadFromTextFile<ModelInput>(
@@ -45,7 +45,7 @@ namespace MachineLearningDemo.ModelBuilders
             ITransformer mlModel = TrainModel(mlContext, trainingDataView, trainingPipeline);
 
             // Save model
-            SaveModel(mlContext, mlModel, FileHelper.SentimentModelPath, trainingDataView.Schema);
+            SaveModel(mlContext, mlModel, modelPath, trainingDataView.Schema);
             return result;
         }
 

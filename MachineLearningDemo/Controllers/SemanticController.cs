@@ -41,7 +41,7 @@ namespace MachineLearningDemo.Controllers
             //    file.CopyTo(fs);
             //    fs.Flush();
             //}
-            var resultData = SentimentModelBuilder.CreateModel(fullPath);
+            var resultData = SentimentModelBuilder.CreateModel(fullPath, _hostingEnvironment.ContentRootPath + FileHelper.SentimentModelPath);
             // TODO: train model here
 
             return Json(new
