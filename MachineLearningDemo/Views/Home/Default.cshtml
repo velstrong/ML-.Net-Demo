@@ -1,0 +1,113 @@
+﻿@model MachineLearningDemo.Models.TestDataViewModel
+@using MachineLearningDemo.Helpers
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<style>
+    #upload-container {
+        height: 165px;
+        align-items: center;
+        background-color: #fafafa;
+        display: inline-flex;
+        padding: 14px;
+        border-radius: 4px;
+        border: 1px silver solid;
+        position: relative;
+    }
+
+    #upload-container * {
+        margin: 0 3px;
+    }
+
+    #upload {
+        display: flex;
+    }
+
+    #loader {
+        display: none;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        border: 1px silver solid;
+        z-index: 1;
+        padding: 10px;
+        justify-content: space-between;
+        font-size: 35px;
+    }
+
+    #loader.show {
+        display: flex;
+    }
+
+    #loader::after {
+        content: "";
+        background: url(/images/tenor.gif) center no-repeat;
+        background-size: contain;
+        width: 220px;
+        height: 160px;
+    }
+
+    h1 {
+        margin-top: 50px;
+    }
+
+    h2 {
+        font-size: 25px;
+        margin-bottom: 30px;
+    }
+
+    hr {
+        margin: 50px 0;
+    }
+</style>
+
+<h1>Demo Page</h1>
+
+<hr />
+
+<h2>Model Training</h2>
+<div id="upload-container">
+    <form id="upload" enctype="multipart/form-data">
+        <input type="file" name="file" class="form-control" id="fileUpload" style="padding: 3px" /><br />
+        <button id="upload-button" class="btn btn-secondary">Upload!</button>
+    </form>
+
+    <button id="remove-button" class="btn btn-info">Remove Model</button>
+
+    <div id="loader">Training: </div>
+</div>
+
+<hr />
+
+<h2>Form Section</h2>
+<div class="row">
+    <div class="col-12">
+        <form id="form">
+            <div class="row">
+                @{
+                    for (var x = 1; x <= 5; x++)
+                    {
+                        <div class="form-group col-12">
+                            <label class="control-label">Form @(x)</label>
+                            <input class="form-control" type="text" name="Form@(x)" />
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Predict" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
