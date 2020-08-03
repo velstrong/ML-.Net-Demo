@@ -1,0 +1,64 @@
+﻿@model MachineLearningDemo.Controllers.ImageModel
+@{
+    ViewBag.Title = "Image Classification Page";
+}
+
+
+@using (Html.BeginForm("Index", "ImageClassification", FormMethod.Post,
+                          new { enctype = "multipart/form-data" }))
+{
+
+    <div style="display:inline-block;">
+        <h2>Please uploa vaild Document</h2>
+        <div style="width:500px; height:250px; border:1px solid #DDD;" id="divImageMediaPreview">
+            <img src="~/@Model.ImagePath" style="width:500px; height:250px;" />
+        </div>
+        <p style="margin: 10px 0;">
+            <input type="file" class="btn" name="formFile" id="formFile" style="display:inline-block;width: 50%;" />
+            <input type="submit" class="btn btn-primary btn-lg" style="display:inline-block" value="Verify Image" />
+        </p>
+
+    </div>
+    @if (!string.IsNullOrEmpty(Model.Predicted))
+    {
+    <div style="display:inline-block; text-align:center;vertical-align: top;
+    width: 50%;
+    padding: 55px 50px;">
+        @if (Model.Predicted.Contains("wrong"))
+        {
+            <h3>Document Not Valid</h3>
+        }
+        else
+        {
+            <h3>Document Predicted As</h3>
+            <h1>@(Model.Predicted.Contains("passport") ? "Passport" : "Emirates ID")</h1>
+            <h3>Score</h3>
+            <h1>@((Model.Score * 100).ToString("##")) %</h1>
+        }
+
+    </div>
+    }
+}
+
+
+@*<div class="row">
+        <div class="col-md-4">
+            <h2>Getting started</h2>
+            <p>
+                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+                enables a clean separation of concerns and gives you full control over markup
+                for enjoyable, agile development.
+            </p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Get more libraries</h2>
+            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Web Hosting</h2>
+            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        </div>
+    </div>*@

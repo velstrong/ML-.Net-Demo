@@ -100,6 +100,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="CreditCardFraudDetection" asp-action="Default">Credit Card Fraud Detection</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="ImageClassification" asp-action="Index">Image Classification</a>
+                        </li>
                         <!-- ADD MORE HERE -->
                     </ul>
                 </div>
@@ -114,7 +117,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            
+
         </div>
     </footer>
 
@@ -139,5 +142,30 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            $("#formFile").change(function () {
+                if (typeof (FileReader) != "undefined") {
+                    var dvPreview = $("#divImageMediaPreview");
+                    //dvPreview.html("");
+                    $($(this)[0].files).each(function () {
+                        var file = $(this);
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            //var img = $("<img />");
+                            //img.attr("style", "width:500px; height:250px;");
+                            //img.attr("src", e.target.result);
+                            dvPreview.find('img').attr('src', e.target.result);
+                        }
+                        reader.readAsDataURL(file[0]);
+                    });
+                } else {
+                    alert("This browser does not support HTML5 FileReader.");
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>
