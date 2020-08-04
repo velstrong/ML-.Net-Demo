@@ -129,18 +129,15 @@ namespace MachineLearningDemo.Controllers
         }
 
         [HttpPost]
-        public ActionResult CaptureImage(IFormFile captureFile)
+        public ActionResult CaptureImage(string base64String)
         {
             byte[] imageBytes = null;
-            if (captureFile.Length > 0)
+            if (!string.IsNullOrEmpty(base64String))
             {
-                using (var ms = new MemoryStream())
-                {
-                    captureFile.CopyTo(ms);
-                    imageBytes = ms.ToArray();
-                }
+                var imageParts = base64String.Split(',').ToList<string>();
+                imageBytes = Convert.FromBase64String(imageParts[1]);
             }
-            
+
             Image image5 = Image.FromBytes(imageBytes);
             ImageAnnotatorClient client = ImageAnnotatorClient.Create();
             IReadOnlyList<EntityAnnotation> labels = client.DetectLabels(image5);

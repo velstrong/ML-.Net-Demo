@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             alert("Its not a Face!");
                         } else {
                             $('#ResponseTable').empty();
-                            var _faceAttributes = data;
+                            var _faceAttributes = data.labels;
                             var _responsetable = "";
                             var _emotiontable = "";
                             _responsetable += '<div class="panel panel-default"><div class="panel-heading">Google Face API Response</div>';
@@ -183,14 +183,45 @@ document.addEventListener('DOMContentLoaded', function () {
                             for (var i = 0; i < _faceAttributes.length; i++) {
 
                                 _responsetable += '<tr><td>' +
-                                    _faceAttributes[i].Description +
+                                    _faceAttributes[i].description +
                                     '</td><td>' +
-                                    _faceAttributes[i].Score +
+                                    _faceAttributes[i].score +
                                     '</td></tr>';
 
 
                             }
+                            for (var i = 0; i < data.faceAnnotations.length; i++) {
 
+                                _responsetable += '<tr><td>' + "Face" + '</td><td>' +
+                                    count++ +
+                                    '</td></tr>';
+
+                                _responsetable += '<tr><td>' + "Joy" + '</td><td>' +
+                                    getannotation(data.faceAnnotations[i].JoyLikelihood) +
+                                    '</td></tr>';
+
+                                _responsetable += '<tr><td>' + "Anger" + '</td><td>' +
+                                    getannotation(data.faceAnnotations[i].AngerLikelihood) +
+                                    '</td></tr>';
+
+                                _responsetable += '<tr><td>' + "Sorrow" + '</td><td>' +
+                                    getannotation(data.faceAnnotations[i].SorrowLikelihood) +
+                                    '</td></tr>';
+
+                                _responsetable += '<tr><td>' + "Surprise" + '</td><td>' +
+                                    getannotation(data.faceAnnotations[i].SurpriseLikelihood) +
+                                    '</td></tr>';
+
+                                _responsetable += '<tr><td>' + "detectionConfidence" + '</td><td>' +
+                                    data.faceAnnotations[i].DetectionConfidence +
+                                    '</td></tr>';
+                                _responsetable += '<tr><td>' + "landmarkingConfidence" + '</td><td>' +
+                                    data.faceAnnotations[i].LandmarkingConfidence +
+                                    '</td></tr>';
+
+
+
+                            }
                             _responsetable += "</table></div></div>"
                             $('#ResponseTable').append(_responsetable);
                         }
