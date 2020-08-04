@@ -40,152 +40,212 @@
     }
 </style>
 
-<h1>Credit Card Fraud Prediction using ML.NET</h1>
-
-<hr />
-
-<h2>Model Training</h2>
-<div id="upload-container">
-    <form id="upload" enctype="multipart/form-data">
-        <input type="file" name="file" class="form-control" id="fileUpload" style="padding: 3px" /><br />
-        <button id="upload-button" class="btn btn-secondary">Upload!</button>
-    </form>
-
-    <button id="remove-button" class="btn btn-info">Remove Model</button>
-
-    <div id="loader">Training: </div>
-</div>
-
-<hr />
-
 <div class="row">
-    <div class="col-md-8">
-        <form id="form">
-            <h2>Form Section</h2>
+    <div class="col-12">
+        <section>
+            <h1>Credit Card Fraud Prediction</h1>
+        </section>
 
-            <div class="text-danger"></div>
-            <div class="row">
-                <div class="form-group col-md-3">
-                    <label class="control-label">Time</label>
-                    <input class="form-control" type="text" name="Time" />
+        <ul class="tabs">
+            <li class="active">
+                <label>Building the Model</label>
+            </li>
+
+            <li>
+                <label>Training the Model</label>
+            </li>
+
+            <li>
+                <label>Evaluate the Model</label>
+            </li>
+
+            <li>
+                <label>Consuming the Model</label>
+            </li>
+        </ul>
+
+        <ul class="tabs--content">
+            <li class="tab--content">
+                <p>
+                    1. Prepare the data and split data for training and tests.<br />
+                    <a href="javascript:void(0);">Training Data</a><br />
+                    <a href="javascript:void(0);">Test Data</a>
+                    <br />
+                    <br />
+                    2. Creating an estimator and transforming the data<br />
+                    3. Choosing a trainer. In this case, a Binary Classification training. Binary or binomial classification is the task of classifying the elements of a given set into two groups (predicting which group each one belongs to)
+                </p>
+
+                <button class="btn btn-custom">Next</button>
+            </li>
+
+            <li class="tab--content">
+                <p>Training the model is a process of running the chosen algorithm on a training data (with known fraud values) to tune the parameters of the model.</p>
+
+                <div id="upload-container">
+                    <form id="upload" enctype="multipart/form-data">
+                        <input type="file" name="file" class="form-control" id="fileUpload" style="padding: 3px" /><br />
+                        <button id="upload-button" class="btn btn-secondary">Upload!</button>
+                    </form>
+
+                    <button id="remove-button" class="btn btn-info">Remove Model</button>
+
+                    <div id="loader">Training: </div>
                 </div>
 
-                @{
-                    for (var x = 1; x <= 28; x++)
-                    {
-                        <div class="form-group col-md-3">
-                            <label class="control-label">V@(x)</label>
-                            <input class="form-control" type="text" name="V@(x)" />
+                @if (FileHelper.ModelExists)
+                {
+                <div>
+                    <button class="btn btn-custom">Next</button>
+                </div>
+                }
+            </li>
+
+            <li class="tab--content">
+                <p>We need this step to conclude how accurate our model is.</p>
+                <h2 id="trainResult"></h2>
+
+                <button class="btn btn-custom">Next</button>
+            </li>
+
+            <li class="tab--content">
+                <p>After the model is trained, you can use the Predict() API to predict the sentiment for new sample text.</p>
+
+                <br />
+                <br />
+
+                <div id="samples" class="row">
+                    <div class="col-6">
+                        <h4>Fraud Samples</h4>
+                        <p style="min-height: 100px">The following samples are already defined as fraud. We want to test our model if it can accurately predict that they are fraud.</p>
+
+                        <table>
+                            <tr>
+                                <th>#</th>
+                                <th>Time</th>
+
+                                @{
+                                    for (var x = 1; x <= 28; x++)
+                                    {
+                                        <th style="display:none">V@(x)</th>
+                                    }
+                                }
+
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+
+                            @{
+                                var fraudCounter = 0;
+                                foreach (var fraud in Model.FraudList)
+                                {
+                                    <tr>
+                                        <td>Sample @(++fraudCounter)</td>
+                                        <td>@fraud.Time</td>
+
+                                        @for (var x = 1; x <= 28; x++)
+                                        {
+                                            <td style="display: none">@fraud.GetType().GetProperty("V" + x).GetValue(fraud)</td>
+                                        }
+
+                                        <td>@fraud.Amount</td>
+                                        <td><button>Predict</button></td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+
+                    <div class="col-6">
+                        <h4>Valid Samples</h4>
+                        <p style="min-height: 100px">The following samples are valid transactions.</p>
+
+                        <table>
+                            <tr>
+                                <th>#</th>
+                                <th>Time</th>
+
+                                @{
+                                    for (var x = 1; x <= 28; x++)
+                                    {
+                                        <th style="display:none">V@(x)</th>
+                                    }
+                                }
+
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                            @{
+                                var validCount = 0;
+                                foreach (var valid in Model.ValidList)
+                                {
+                                    <tr>
+                                        <td>Sample @(++validCount)</td>
+                                        <td>@valid.Time</td>
+
+                                        @for (var x = 1; x <= 28; x++)
+                                        {
+                                            <td style="display:none">@valid.GetType().GetProperty("V" + x).GetValue(valid)</td>
+                                        }
+
+                                        <td>@valid.Amount</td>
+                                        <td><button>Predict</button></td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+
+                <br />
+                <br />
+
+                <form id="form">
+                    <h2>Make Predictions</h2>
+
+                    <div class="text-danger"></div>
+                    <div class="row">
+                        <div class="form-group col-md-2">
+                            <label class="control-label">Time</label>
+                            <input class="form-control" type="text" name="Time" />
                         </div>
-                    }
-                }
 
-                <div class="form-group col-md-3">
-                    <label class="control-label">Amount</label>
-                    <input class="form-control" type="text" name="Amount" />
+                        @{
+                            for (var x = 1; x <= 28; x++)
+                            {
+                                <div class="form-group col-md-2">
+                                    <label class="control-label">V@(x)</label>
+                                    <input class="form-control" type="text" name="V@(x)" />
+                                </div>
+                            }
+                        }
+
+                        <div class="form-group col-md-2">
+                            <label class="control-label">Amount</label>
+                            <input class="form-control" type="text" name="Amount" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Predict" class="btn btn-primary" style="display:none" />
+                    </div>
+                </form>
+
+                <div class="row" id="prediction" style="display: none">
+                    <hr style="width: 100%" />
+
+                    <div class="col-md-6">
+                        <h3>Prediction: <span></span></h3>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h3>Score: <span></span></h3>
+                    </div>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Predict" class="btn btn-primary" style="display:none" />
-            </div>
-        </form>
-
-        <div class="row" id="prediction" style="display: none">
-            <hr style="width: 100%" />
-
-            <div class="col-md-6">
-                <h3>Prediction: <span></span></h3>
-            </div>
-
-            <div class="col-md-6">
-                <h3>Score: <span></span></h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4" id="samples">
-        <h4>Fraud Samples</h4>
-        <p>The following samples are already defined as fraud. We want to test our model if it can accurately predict that they are fraud.</p>
-
-        <table>
-            <tr>
-                <th>#</th>
-                <th>Time</th>
-
-                @{
-                    for (var x = 1; x <= 28; x++)
-                    {
-                        <th style="display:none">V@(x)</th>
-                    }
-                }
-
-                <th>Amount</th>
-                <th>Action</th>
-            </tr>
-
-            @{
-                var fraudCounter = 0;
-                foreach (var fraud in Model.FraudList)
-                {
-                    <tr>
-                        <td>Sample @(++fraudCounter)</td>
-                        <td>@fraud.Time</td>
-
-                        @for (var x = 1; x <= 28; x++)
-                        {
-                            <td style="display: none">@fraud.GetType().GetProperty("V" + x).GetValue(fraud)</td>
-                        }
-
-                        <td>@fraud.Amount</td>
-                        <td><button>Predict</button></td>
-                    </tr>
-                }
-            }
-        </table>
-
-        <br />
-
-        <h4>Valid Samples</h4>
-        <p>The following samples are valid transactions.</p>
-
-        <table>
-            <tr>
-                <th>#</th>
-                <th>Time</th>
-
-                @{
-                    for (var x = 1; x <= 28; x++)
-                    {
-                        <th style="display:none">V@(x)</th>
-                    }
-                }
-
-                <th>Amount</th>
-                <th>Action</th>
-            </tr>
-            @{
-                var validCount = 0;
-                foreach (var valid in Model.ValidList)
-                {
-                    <tr>
-                        <td>Sample @(++validCount)</td>
-                        <td>@valid.Time</td>
-
-                        @for (var x = 1; x <= 28; x++)
-                        {
-                            <td style="display:none">@valid.GetType().GetProperty("V" + x).GetValue(valid)</td>
-                        }
-
-                        <td>@valid.Amount</td>
-                        <td><button>Predict</button></td>
-                    </tr>
-                }
-            }
-        </table>
+            </li>
+        </ul>
     </div>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial-CreditCardFraudDetection");}
 }

@@ -54,7 +54,8 @@
                         $sentimentform.show();
                         $removeButton.show();
                         alert('Training Complete!');
-                        $('#trainResult').text(data.result);
+                        $('#trainResult').html(data.result.replace('*', '').split('-').join('<br>'));
+                        NextStep();
                     }
 
                     $sentimentupload[0].reset();

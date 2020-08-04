@@ -8,55 +8,97 @@
     var result = ViewBag.Result;
 }
 
-<h1>Sentimental Analysis</h1>
-
-<hr />
-
-<h2>Model Training</h2>
-<div id="upload-container">
-    <form id="sentimentupload" enctype="multipart/form-data">
-        <input type="file" name="file" class="form-control" id="fileUpload" style="padding: 3px" /><br />
-        <button id="upload-button" class="btn btn-secondary">Upload!</button>
-    </form>
-
-    <button id="remove-button" class="btn btn-info">Remove Model</button>
-
-    <div id="loader">Training: </div>
-    <br />
-    <h2 id="trainResult"></h2>
-</div>
-
-<hr />
-
-<h2>Form Section</h2>
-
 <div class="row">
-    <div class="col-md-4">
-        <form id="sentimentform">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Comment" class="control-label"></label>
-                <input asp-for="Comment" class="form-control" />
-                <span asp-validation-for="Comment" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Check" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-    <div id="result" style="display:none" class="col-md-offset-4 col-md-4">
+    <div class="col-12">
+        <section>
+            <h1>Sentimental Analysis</h1>
+        </section>
 
-        <h2>Result</h2>
+        <ul class="tabs">
+            <li class="active">
+                <label>Building the Model</label>
+            </li>
 
-        <h3 id="predictionh">Prediction: <span id="prediction"></span></h3>
-        
-        <h3>Score:<span id="score"></span></h3>
+            <li>
+                <label>Training the Model</label>
+            </li>
+
+            <li>
+                <label>Evaluate the Model</label>
+            </li>
+
+            <li>
+                <label>Consuming the Model</label>
+            </li>
+        </ul>
+
+        <ul class="tabs--content">
+            <li class="tab--content">
+                <p>
+                    1. Prepare the data and split data for training and tests.<br />
+                    <a href="javascript:void(0);">Training Data</a><br />
+                    <a href="javascript:void(0);">Test Data</a>
+                    <br />
+                    <br />
+                    2. Creating an estimator and transforming the data<br />
+                    3. Choosing a trainer. In this case, a Binary Classification training. Binary or binomial classification is the task of classifying the elements of a given set into two groups (predicting which group each one belongs to)
+                </p>
+
+                <button class="btn btn-custom">Next</button>
+            </li>
+
+            <li class="tab--content">
+                <p>Training the model is a process of running the chosen algorithm on a training data (with known fraud values) to tune the parameters of the model.</p>
+
+                <div id="upload-container">
+                    <form id="sentimentupload" enctype="multipart/form-data">
+                        <input type="file" name="file" class="form-control" id="fileUpload" style="padding: 3px" /><br />
+                        <button id="upload-button" class="btn btn-inherit">Upload!</button>
+                    </form>
+
+                    <div id="loader">Training: </div>
+                </div>
+            </li>
+
+            <li class="tab--content">
+                <p>We need this step to conclude how accurate our model is.</p>
+                <h2 id="trainResult"></h2>
+
+                <button class="btn btn-custom">Next</button>
+            </li>
+
+            <li class="tab--content">
+                <p>After the model is trained, you can use the Predict() API to predict the sentiment for new sample text.</p>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <form id="sentimentform">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="Comment" class="control-label"></label>
+                                <input asp-for="Comment" class="form-control" />
+                                <span asp-validation-for="Comment" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Check" class="btn btn-inherit" />
+                            </div>
+                        </form>
+                    </div>
+                    <div id="result" style="display:none" class="col-md-offset-4 col-md-4">
+
+                        <h2>Result</h2>
+
+                        <h3 id="predictionh">Prediction: <span id="prediction"></span></h3>
+
+                        <h3>Score:<span id="score"></span></h3>
 
 
+                    </div>
+                </div>
+            </li>
+        </ul>
     </div>
 </div>
-
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial-Semantic");}

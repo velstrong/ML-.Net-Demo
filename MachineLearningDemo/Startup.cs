@@ -59,7 +59,7 @@ namespace CreditCardFraudDetection
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Default}/{id?}");
+                    template: "{controller=Semantic}/{action=Analysis}/{id?}");
             });
 
             //app.UseStaticFiles(new StaticFileOptions()

@@ -53,6 +53,7 @@
                         $samples.show();
                         $removeButton.show();
                         alert('Training Complete!');
+                        NextStep();
                     }
 
                     $upload[0].reset();
@@ -93,6 +94,8 @@
                     $samples.hide();
                     $removeButton.hide();
                     $prediction.hide();
+
+                    $upload.parents('.tab--content').find('.btn-custom').hide();
                 }
                 else {
                     alert('Unable to delete model');
