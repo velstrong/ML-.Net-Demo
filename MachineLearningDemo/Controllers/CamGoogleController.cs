@@ -16,8 +16,11 @@ namespace MachineLearningDemo.Controllers
     }
     public class FaceResponse
     {
+        public dynamic texts { get; set; }
         public dynamic labels { get; set; }
         public dynamic faceAnnotations { get; set; }
+
+        public dynamic searchAnnotations { get; set; }
     }
 
     [Route("/{Controller}/{Action}")]
@@ -35,17 +38,6 @@ namespace MachineLearningDemo.Controllers
         public ActionResult Capture(string base64String)
         {
             byte[] imageBytes = null;
-            //string base64String = string.Empty;
-            //if (formFile.Length > 0)
-            //{
-            //    using (var ms = new MemoryStream())
-            //    {
-            //        formFile.CopyTo(ms);
-            //        var fileBytes = ms.ToArray();
-            //        base64String = Convert.ToBase64String(fileBytes);
-            //        // act on the Base64 data
-            //    }
-            //}
             
             if (!string.IsNullOrEmpty(base64String))
             {
@@ -70,72 +62,36 @@ namespace MachineLearningDemo.Controllers
                 // Console.WriteLine($"Score: {(int)(label.Score * 100)}%; Description: {label.Description}");
             }
             IReadOnlyList<FaceAnnotation> faceAnnotations = client.DetectFaces(image5);
+            IReadOnlyList<EntityAnnotation> texts = client.DetectText(image5);
+            var textList = new List<FaceAttribute>();
+            foreach (EntityAnnotation label in texts)
+            {
+                textList.Add(new FaceAttribute()
+                {
+                    Score = ((int)(label.Score * 100)).ToString(),
+                    Description = label.Description
 
-            //var faceAttributeList = new List<FaceAttribute>();
-            //foreach (FaceAnnotation label in faceAnnotations)
-            //{
-            //faceAttributeList.Add(new FaceAttribute()
-            //{
-            //    Score = ((int)(label. * 100)).ToString(),
-            //    Description = label.
-
-            //}); ;
-            // Console.WriteLine($"Score: {(int)(label.Score * 100)}%; Description: {label.Description}");
-            //}
-            //using (var client = new WebClient())
-            //{
-            //    Mainrequests Mainrequests = new Mainrequests()
-            //    {
-
-            //        requests = new List<requests>()
-            //            {
-            //            new requests()
-            //            {
-            //            image = new image()
-            //            {
-            //            content = imageParts[1]
-            //        },
-
-            //        features = new List<features>()
-            //        {
-            //            //FACE_DETECTION
-            //            //#############################//
-            //            new features()
-            //            {
-            //                type = "FACE_DETECTION",
-            //            }
-
-            //            //LABEL_DETECTION
-            //            //#############################//
-            //            //new features()
-            //            //{
-            //            //    type = "LABEL_DETECTION",
-            //            //}
-            //        }
-
-            //    }
-
-            //    }
-
-            //    };
-
-            //    client.Headers.Add("Content-Type:application/json");
-            //    client.Headers.Add("Accept:application/json");
-            //    var response = client.UploadString("https://vision.googleapis.com/v1/images:annotate?key=" + "AIzaSyBUPN7TQQUqYcTi6HI4zpqXJkaWm1AG-ic", JsonConvert.SerializeObject(Mainrequests));
-
-            //    return Json(data: response);
-            //}
-            return Json(new FaceResponse() { labels = faceAttributeList, faceAnnotations = faceAnnotations });
+                }); ;
+            }
+            SafeSearchAnnotation searchAnnotations = client.DetectSafeSearch(image5);
+            return Json(new FaceResponse() { labels = faceAttributeList, faceAnnotations = faceAnnotations, texts = textList, searchAnnotations = searchAnnotations });
         }
 
         [HttpPost]
-        public ActionResult CaptureImage(string base64String)
+        public IActionResult CaptureImage(IFormFile file)
         {
-            byte[] imageBytes = null;
-            if (!string.IsNullOrEmpty(base64String))
+            if (file == null)
             {
-                var imageParts = base64String.Split(',').ToList<string>();
-                imageBytes = Convert.FromBase64String(imageParts[1]);
+                return Json(new
+                {
+                    Status = 0
+                });
+            }
+            byte[] imageBytes = null;
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                imageBytes = ms.ToArray();
             }
 
             Image image5 = Image.FromBytes(imageBytes);
@@ -155,61 +111,20 @@ namespace MachineLearningDemo.Controllers
             }
             IReadOnlyList<FaceAnnotation> faceAnnotations = client.DetectFaces(image5);
 
-            //var faceAttributeList = new List<FaceAttribute>();
-            //foreach (FaceAnnotation label in faceAnnotations)
-            //{
-            //faceAttributeList.Add(new FaceAttribute()
-            //{
-            //    Score = ((int)(label. * 100)).ToString(),
-            //    Description = label.
+            IReadOnlyList<EntityAnnotation> texts = client.DetectText(image5);
+            var textList = new List<FaceAttribute>();
+            foreach (EntityAnnotation label in texts)
+            {
+                textList.Add(new FaceAttribute()
+                {
+                    Score = ((int)(label.Score * 100)).ToString(),
+                    Description = label.Description
 
-            //}); ;
-            // Console.WriteLine($"Score: {(int)(label.Score * 100)}%; Description: {label.Description}");
-            //}
-            //using (var client = new WebClient())
-            //{
-            //    Mainrequests Mainrequests = new Mainrequests()
-            //    {
-
-            //        requests = new List<requests>()
-            //            {
-            //            new requests()
-            //            {
-            //            image = new image()
-            //            {
-            //            content = imageParts[1]
-            //        },
-
-            //        features = new List<features>()
-            //        {
-            //            //FACE_DETECTION
-            //            //#############################//
-            //            new features()
-            //            {
-            //                type = "FACE_DETECTION",
-            //            }
-
-            //            //LABEL_DETECTION
-            //            //#############################//
-            //            //new features()
-            //            //{
-            //            //    type = "LABEL_DETECTION",
-            //            //}
-            //        }
-
-            //    }
-
-            //    }
-
-            //    };
-
-            //    client.Headers.Add("Content-Type:application/json");
-            //    client.Headers.Add("Accept:application/json");
-            //    var response = client.UploadString("https://vision.googleapis.com/v1/images:annotate?key=" + "AIzaSyBUPN7TQQUqYcTi6HI4zpqXJkaWm1AG-ic", JsonConvert.SerializeObject(Mainrequests));
-
-            //    return Json(data: response);
-            //}
-            return Json(new FaceResponse() { labels = faceAttributeList, faceAnnotations = faceAnnotations });
+                }); ;
+            }
+           SafeSearchAnnotation searchAnnotations = client.DetectSafeSearch(image5);
+           
+            return Json(new FaceResponse() { labels = faceAttributeList, faceAnnotations = faceAnnotations, texts=textList, searchAnnotations=searchAnnotations });
         }
     }
 }
