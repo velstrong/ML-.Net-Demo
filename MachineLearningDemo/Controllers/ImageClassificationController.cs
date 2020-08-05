@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;
 using Microsoft.ML.Data;
+using Newtonsoft.Json;
 
 namespace MachineLearningDemo.Controllers
 {
-    [Route("/{Controller}/")]
+    [Route("/{Controller}/{Action}")]
     public class ImageClassificationController : Controller
     {
         // <SnippetDeclareGlobalVariables>
@@ -18,8 +19,8 @@ namespace MachineLearningDemo.Controllers
         static readonly string _imagesFolder = Path.Combine(_assetsPath, "images/passports");
         //static readonly string _trainTagsTsv = Path.Combine(_imagesFolder, "tags.tsv");
         static readonly string _trainTagsTsv = Path.Combine(_imagesFolder, "passport_tags.tsv");
-        //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
         static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
+        //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
         //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "p4.PNG");
         //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "Capture12.PNG");
         //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "teddy4.jpg");
@@ -34,7 +35,7 @@ namespace MachineLearningDemo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(ImageModel imageModel)
+        public ActionResult Index(ImageModel imageModel,string trainResult)
         {
             //ImageModel imageModel = new ImageModel();
             if (imageModel != null)
@@ -59,16 +60,64 @@ namespace MachineLearningDemo.Controllers
                     ITransformer model = GenerateModel(mlContext);
                     // </SnippetCallGenerateModel>
 
+                    //var value = HttpContext.Session.GetString("TrainModel");
+
+                    
                     // <SnippetCallClassifySingleImage>
                     imageModel = ClassifySingleImage(mlContext, model, filePath);
                     // </SnippetCallClassifySingleImage>
-
+                    
                     imageModel.ImagePath = filePath;
                 }
             }
             return View(imageModel);
         }
 
+        //[HttpPost]
+        //public ActionResult TrainModel(IFormFile file)
+        //{
+        //    if (file == null)
+        //    {
+        //        return Json(new
+        //        {
+        //            Status = 0
+        //        });
+        //    }
+        //    string fileName = System.IO.Path.GetFileName(file.FileName);
+        //    string filePath = System.IO.Path.Combine("assets/images/passports", fileName);
+
+        //    using (var stream = System.IO.File.Create(filePath))
+        //    {
+        //        file.CopyTo(stream);
+        //    }
+        //    if (System.IO.File.Exists(filePath))
+        //    {
+        //        // Create MLContext to be shared across the model creation workflow objects
+        //        // <SnippetCreateMLContext>
+        //        MLContext mlContext = new MLContext();
+        //        // </SnippetCreateMLContext>
+
+        //        //string _assetsPath = System.IO.Path.Combine(Server.MapPath("~/assets"));
+        //        // <SnippetCallGenerateModel>
+        //        ITransformer model = GenerateModel(mlContext, filePath);
+        //        // </SnippetCallGenerateModel>
+
+
+        //        //HttpContext.Session.SetComplexData("TrainModel", model);
+        //        //HttpContext.Session.SetString("TrainModel", JsonConvert.SerializeObject(model));
+
+        //        return Json(new
+        //        {
+        //            Status = 1,
+        //            result = JsonConvert.SerializeObject(model)
+        //        });
+        //    }
+
+        //    return Json(new
+        //    {
+        //        Status = 0
+        //    });
+        //}
 
         // Build and train model
         public static ITransformer GenerateModel(MLContext mlContext)

@@ -3,43 +3,72 @@
     ViewBag.Title = "Image Classification Page";
 }
 
+<h1>Image Classification</h1>
+@*<hr />
+<h2>Model Training</h2>*@
+@*<div id="upload-container">
+    <form id="uploadTraining" enctype="multipart/form-data">
+        <input type="file" name="file" class="form-control" id="fileUpload" style="padding: 3px" /><br />
+        <button id="upload-button" class="btn btn-secondary">Upload!</button>
+    </form>
+</div>*@
+<hr />
 
 @using (Html.BeginForm("Index", "ImageClassification", FormMethod.Post,
-                          new { enctype = "multipart/form-data" }))
+                      new { enctype = "multipart/form-data" }))
 {
-
+    <input type="hidden" id="trainResult" />
     <div style="display:inline-block;">
         <h2>Please uploa vaild Document</h2>
-        <div style="width:500px; height:250px; border:1px solid #DDD;" id="divImageMediaPreview">
-            <img src="~/@Model.ImagePath" style="width:500px; height:250px;" />
+        <div style="width:500px; height:250px; border-radius: 4px; border: 1px silver solid;" id="divImageMediaPreview">
+            <img src="~/@(!string.IsNullOrEmpty(Model.ImagePath) ? Model.ImagePath : "assets/images/postcard.png")" style="width:498px; height:248px;" />
+
+
         </div>
-        <p style="margin: 10px 0;">
-            <input type="file" class="btn" name="formFile" id="formFile" style="display:inline-block;width: 50%;" />
-            <input type="submit" class="btn btn-primary btn-lg" style="display:inline-block" value="Verify Image" />
-        </p>
+        <div style="margin: 10px 0;">
+            <input type="file" class="btn" name="formFile" id="formFile" style="display:inline-block;width: 370px;" />
+            <input type="submit" class="btn btn-info" style="display:inline-block" value="Verify Image" />
+        </div>
 
     </div>
     @if (!string.IsNullOrEmpty(Model.Predicted))
     {
-    <div style="display:inline-block; text-align:center;vertical-align: top;
-    width: 50%;
-    padding: 55px 50px;">
-        @if (Model.Predicted.Contains("wrong"))
-        {
-            <h3>Document Not Valid</h3>
-        }
-        else
-        {
-            <h3>Document Predicted As</h3>
-            <h1>@(Model.Predicted.Contains("passport") ? "Passport" : "Emirates ID")</h1>
-            <h3>Score</h3>
-            <h1>@((Model.Score * 100).ToString("##")) %</h1>
-        }
+        <div class="result">
+            @if (Model.Predicted.Contains("wrong"))
+            {
+                <h3>Document Not Valid</h3>
+            }
+            else
+            {
+                <h3>Document Predicted As</h3>
+                <h1>@(Model.Predicted.Contains("passport") ? "Passport" : "Emirates ID")</h1>
+                <h3>Score</h3>
+                <h1>@((Model.Score * 100).ToString("##")) %</h1>
+            }
 
-    </div>
+        </div>
     }
 }
+<style>
+    .result h1 {
+        margin: 10px 0;
+        background: #767373;
+        padding: 10px;
+        color: #fff;
+    }
 
+    .result {
+        display: inline-block;
+        text-align: center;
+        vertical-align: top;
+        width: 50%;
+        padding: 55px 50px;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial-Classification");}
+}
 
 @*<div class="row">
         <div class="col-md-4">

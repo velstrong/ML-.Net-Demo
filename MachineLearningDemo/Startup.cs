@@ -62,12 +62,12 @@ namespace CreditCardFraudDetection
                     template: "{controller=Semantic}/{action=Analysis}/{id?}");
             });
 
-            //app.UseStaticFiles(new StaticFileOptions()
-            //{
-            //    FileProvider = new PhysicalFileProvider(
-            //Path.Combine(Directory.GetCurrentDirectory(), @"assets")),
-            //    RequestPath = new PathString("/assets")
-            //});
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), @"assets")),
+                RequestPath = new PathString("/assets")
+            });
         }
     }
 }
