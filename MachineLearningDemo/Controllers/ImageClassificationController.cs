@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MachineLearningDemo.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;
@@ -19,14 +21,18 @@ namespace MachineLearningDemo.Controllers
         static readonly string _imagesFolder = Path.Combine(_assetsPath, "images/passports");
         //static readonly string _trainTagsTsv = Path.Combine(_imagesFolder, "tags.tsv");
         static readonly string _trainTagsTsv = Path.Combine(_imagesFolder, "passport_tags.tsv");
-        static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
+        //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
         //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
         //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "p4.PNG");
         //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "Capture12.PNG");
         //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "teddy4.jpg");
         static readonly string _inceptionTensorFlowModel = Path.Combine(_assetsPath, "inception", "tensorflow_inception_graph.pb");
         //</SnippetDeclareGlobalVariables>
-
+        IHostingEnvironment _hostingEnvironment;
+        public ImageClassificationController(IHostingEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+        }
         public ActionResult Index()
         {
             ImageModel imageModel = new ImageModel();
@@ -57,14 +63,14 @@ namespace MachineLearningDemo.Controllers
 
                     //string _assetsPath = System.IO.Path.Combine(Server.MapPath("~/assets"));
                     // <SnippetCallGenerateModel>
-                    ITransformer model = GenerateModel(mlContext);
+                    //ITransformer model = GenerateModel(mlContext);
                     // </SnippetCallGenerateModel>
 
                     //var value = HttpContext.Session.GetString("TrainModel");
 
-                    
+                    ITransformer mlModel = mlContext.Model.Load(_hostingEnvironment.ContentRootPath + FileHelper.ImageMLModellPath, out var modelInputSchema);
                     // <SnippetCallClassifySingleImage>
-                    imageModel = ClassifySingleImage(mlContext, model, filePath);
+                    imageModel = ClassifySingleImage(mlContext, mlModel, filePath);
                     // </SnippetCallClassifySingleImage>
                     
                     imageModel.ImagePath = filePath;
@@ -73,54 +79,55 @@ namespace MachineLearningDemo.Controllers
             return View(imageModel);
         }
 
-        //[HttpPost]
-        //public ActionResult TrainModel(IFormFile file)
-        //{
-        //    if (file == null)
-        //    {
-        //        return Json(new
-        //        {
-        //            Status = 0
-        //        });
-        //    }
-        //    string fileName = System.IO.Path.GetFileName(file.FileName);
-        //    string filePath = System.IO.Path.Combine("assets/images/passports", fileName);
+        [HttpPost]
+        public ActionResult TrainModel(IFormFile file)
+        {
+            var rootPath = _hostingEnvironment.ContentRootPath;
+            if (file == null)
+            {
+                return Json(new
+                {
+                    Status = 0
+                });
+            }
+            string fileName = System.IO.Path.GetFileName(file.FileName);
+            string filePath = System.IO.Path.Combine("assets/images/passports", fileName);
 
-        //    using (var stream = System.IO.File.Create(filePath))
-        //    {
-        //        file.CopyTo(stream);
-        //    }
-        //    if (System.IO.File.Exists(filePath))
-        //    {
-        //        // Create MLContext to be shared across the model creation workflow objects
-        //        // <SnippetCreateMLContext>
-        //        MLContext mlContext = new MLContext();
-        //        // </SnippetCreateMLContext>
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                file.CopyTo(stream);
+            }
+            if (System.IO.File.Exists(filePath))
+            {
+                // Create MLContext to be shared across the model creation workflow objects
+                // <SnippetCreateMLContext>
+                MLContext mlContext = new MLContext();
+                // </SnippetCreateMLContext>
 
-        //        //string _assetsPath = System.IO.Path.Combine(Server.MapPath("~/assets"));
-        //        // <SnippetCallGenerateModel>
-        //        ITransformer model = GenerateModel(mlContext, filePath);
-        //        // </SnippetCallGenerateModel>
+                //string _assetsPath = System.IO.Path.Combine(Server.MapPath("~/assets"));
+                // <SnippetCallGenerateModel>
+                ITransformer model = GenerateModel(mlContext, filePath, rootPath);
+                // </SnippetCallGenerateModel>
 
 
-        //        //HttpContext.Session.SetComplexData("TrainModel", model);
-        //        //HttpContext.Session.SetString("TrainModel", JsonConvert.SerializeObject(model));
+                //HttpContext.Session.SetComplexData("TrainModel", model);
+                //HttpContext.Session.SetString("TrainModel", JsonConvert.SerializeObject(model));
 
-        //        return Json(new
-        //        {
-        //            Status = 1,
-        //            result = JsonConvert.SerializeObject(model)
-        //        });
-        //    }
+                return Json(new
+                {
+                    Status = 1,
+                    result = JsonConvert.SerializeObject(model)
+                });
+            }
 
-        //    return Json(new
-        //    {
-        //        Status = 0
-        //    });
-        //}
+            return Json(new
+            {
+                Status = 0
+            });
+        }
 
-        // Build and train model
-        public static ITransformer GenerateModel(MLContext mlContext)
+        
+        public static ITransformer GenerateModel(MLContext mlContext, string _testTagsTsv, string rootPath)
         {
 
             // <SnippetImageTransforms>
@@ -181,6 +188,7 @@ namespace MachineLearningDemo.Controllers
             //Console.WriteLine($"PerClassLogLoss is: {String.Join(" , ", metrics.PerClassLogLoss.Select(c => c.ToString()))}");
             //</SnippetDisplayMetrics>
 
+            mlContext.Model.Save(model, testData.Schema, rootPath + FileHelper.ImageMLModellPath);
             // <SnippetReturnModel>
             return model;
             // </SnippetReturnModel>

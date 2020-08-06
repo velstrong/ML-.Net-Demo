@@ -61,5 +61,13 @@ namespace MachineLearningDemo.Helpers
                 return File.Exists(ModelPath);
             }
         }
+
+        public static string ImageMLModellPath
+        {
+            get
+            {
+                return "/assets/output/ImageMLModel.zip";
+            }
+        }
     }
 }
