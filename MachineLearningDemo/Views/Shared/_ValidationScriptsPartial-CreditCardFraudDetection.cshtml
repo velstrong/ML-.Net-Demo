@@ -52,6 +52,7 @@
                         $form.show();
                         $samples.show();
                         $removeButton.show();
+                        $('#trainResult span').html(data.accuracy);
                         alert('Training Complete!');
                         NextStep();
                     }
@@ -81,7 +82,7 @@
         });
 
         $primaryButton.show();
-        $primaryButton.trigger('click');
+        //$primaryButton.trigger('click');
     });
 
     $('#remove-button').on('click', function () {

@@ -17,12 +17,12 @@ namespace CreditCardFraudDetection.Trainer
         // Set a random seed for repeatable/deterministic results across multiple trainings.
         private static MLContext mlContext = new MLContext(seed: 1);
 
-        public static void TrainModel()
+        public static ModelTrainResponse TrainModel()
         {
-            TrainModel(FileHelper.TrainDataPath);
+            return TrainModel(FileHelper.TrainDataPath);
         }
 
-        public static void TrainModel(string trainDataPath)
+        public static ModelTrainResponse TrainModel(string trainDataPath)
         {
             // Load Data
             IDataView trainingDataView = mlContext.Data.LoadFromTextFile<ModelInput>(
@@ -36,13 +36,15 @@ namespace CreditCardFraudDetection.Trainer
             IEstimator<ITransformer> trainingPipeline = BuildTrainingPipeline(mlContext);
 
             // Evaluate quality of Model
-            Evaluate(mlContext, trainingDataView, trainingPipeline);
+            var response = Evaluate(mlContext, trainingDataView, trainingPipeline);
 
             // Train Model
             ITransformer mlModel = TrainModel(mlContext, trainingDataView, trainingPipeline);
 
             // Save model
             SaveModel(mlContext, mlModel, FileHelper.ModelPath, trainingDataView.Schema);
+
+            return response;
         }
 
         public static IEstimator<ITransformer> BuildTrainingPipeline(MLContext mlContext)
@@ -89,13 +91,14 @@ namespace CreditCardFraudDetection.Trainer
             return model;
         }
 
-        private static void Evaluate(MLContext mlContext, IDataView trainingDataView, IEstimator<ITransformer> trainingPipeline)
+        private static ModelTrainResponse Evaluate(MLContext mlContext, IDataView trainingDataView, IEstimator<ITransformer> trainingPipeline)
         {
             // Cross-Validate with single dataset (since we don't have two datasets, one for training and for evaluate)
             // in order to evaluate and get the model's accuracy metrics
             Console.WriteLine("=============== Cross-validating to get model's accuracy metrics ===============");
             var crossValidationResults = mlContext.BinaryClassification.CrossValidateNonCalibrated(trainingDataView, trainingPipeline, numberOfFolds: 5, labelColumnName: "Class");
-            PrintBinaryClassificationFoldsAverageMetrics(crossValidationResults);
+
+            return PrintBinaryClassificationFoldsAverageMetrics(crossValidationResults);
         }
         private static void SaveModel(MLContext mlContext, ITransformer mlModel, string modelRelativePath, DataViewSchema modelInputSchema)
         {
@@ -126,7 +129,7 @@ namespace CreditCardFraudDetection.Trainer
         }
 
 
-        public static void PrintBinaryClassificationFoldsAverageMetrics(IEnumerable<TrainCatalogBase.CrossValidationResult<BinaryClassificationMetrics>> crossValResults)
+        public static ModelTrainResponse PrintBinaryClassificationFoldsAverageMetrics(IEnumerable<TrainCatalogBase.CrossValidationResult<BinaryClassificationMetrics>> crossValResults)
         {
             var metricsInMultipleFolds = crossValResults.Select(r => r.Metrics);
 
@@ -141,6 +144,13 @@ namespace CreditCardFraudDetection.Trainer
             Console.WriteLine($"*------------------------------------------------------------------------------------------------------------");
             Console.WriteLine($"*       Average Accuracy:    {AccuracyAverage:0.###}  - Standard deviation: ({AccuraciesStdDeviation:#.###})  - Confidence Interval 95%: ({AccuraciesConfidenceInterval95:#.###})");
             Console.WriteLine($"*************************************************************************************************************");
+
+            return new ModelTrainResponse()
+            {
+                Accuracy = AccuracyAverage,
+                StandardDeviation = AccuraciesStdDeviation,
+                ConfidenceInterval95 = AccuraciesConfidenceInterval95
+            };
         }
 
         public static double CalculateStandardDeviation(IEnumerable<double> values)

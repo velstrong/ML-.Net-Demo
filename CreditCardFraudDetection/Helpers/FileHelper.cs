@@ -20,7 +20,7 @@ namespace CreditCardFraudDetection.Helpers
         {
             get
             {
-                return BasePath + "assets/input/testData.csv";
+                return BasePath + "wwwroot/training-files/testData.csv";
             }
         }
 
@@ -28,7 +28,7 @@ namespace CreditCardFraudDetection.Helpers
         {
             get
             {
-                return BasePath + "assets/input/trainData.csv";
+                return BasePath + "wwwroot/training-files/trainData.csv";
             }
         }
 

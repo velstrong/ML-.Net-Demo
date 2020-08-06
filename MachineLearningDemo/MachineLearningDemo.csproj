@@ -23,6 +23,8 @@
 
   <ItemGroup>
     <None Include="wwwroot\images\tenor.gif" />
+    <None Include="wwwroot\training-files\testData.csv" />
+    <None Include="wwwroot\training-files\trainData.csv" />
   </ItemGroup>
 
 

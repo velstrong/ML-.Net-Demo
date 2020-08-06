@@ -89,11 +89,12 @@ namespace MachineLearningDemo.Controllers
                 fs.Flush();
             }
 
-            ModelBuilder.TrainModel(fullPath);
+            var response = ModelBuilder.TrainModel(fullPath);
 
             return Json(new
             {
-                Status = 1
+                Status = 1,
+                Accuracy = response.Accuracy
             });
         }
 

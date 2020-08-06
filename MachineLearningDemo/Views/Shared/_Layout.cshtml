@@ -56,6 +56,7 @@
             padding: 10px;
             justify-content: space-between;
             font-size: 35px;
+            margin: 0;
         }
 
         #loader.show {
@@ -368,15 +369,21 @@
             tabContents = $('.tabs--content li');
 
             $('.btn-custom').on('click', function () {
-                NextStep();
+                var skipAmount = $(this).data('skip');
+
+                NextStep(skipAmount);
             });
 
             $("a#@controllerId-@actionId").addClass("active");
         });
 
-        var NextStep = function () {
-            tabContents.eq(currentTabIndex++).hide();
-            
+        var NextStep = function (skipAmount) {
+            skipAmount = skipAmount || 0;
+
+            tabContents.eq(currentTabIndex).hide();
+
+            currentTabIndex += (1 + skipAmount);
+
             tabButtons.eq(currentTabIndex).addClass('active');
             tabContents.eq(currentTabIndex).show();
         }
