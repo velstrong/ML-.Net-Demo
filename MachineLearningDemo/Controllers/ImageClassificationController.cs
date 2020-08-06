@@ -35,23 +35,28 @@ namespace MachineLearningDemo.Controllers
         }
         public ActionResult Index()
         {
-            ImageModel imageModel = new ImageModel();
-
-            return View(imageModel);
+            return View();
         }
 
         [HttpPost]
-        public ActionResult Index(ImageModel imageModel,string trainResult)
+        public ActionResult Index(IFormFile formFile)
         {
-            //ImageModel imageModel = new ImageModel();
-            if (imageModel != null)
+            if (formFile == null)
             {
-                string pic = System.IO.Path.GetFileName(imageModel.formFile.FileName);
+                return Json(new
+                {
+                    status = 0
+                });
+            }
+            //ImageModel imageModel = new ImageModel();
+            //if (imageModel != null)
+            {
+                string pic = System.IO.Path.GetFileName(formFile.FileName);
                 string filePath = System.IO.Path.Combine("assets/temp", pic);
 
                 using (var stream = System.IO.File.Create(filePath))
                 {
-                    imageModel.formFile.CopyTo(stream);
+                    formFile.CopyTo(stream);
                 }
 
                 if (System.IO.File.Exists(filePath))
@@ -70,13 +75,25 @@ namespace MachineLearningDemo.Controllers
 
                     ITransformer mlModel = mlContext.Model.Load(_hostingEnvironment.ContentRootPath + FileHelper.ImageMLModellPath, out var modelInputSchema);
                     // <SnippetCallClassifySingleImage>
+                    ImageModel imageModel = new ImageModel();
                     imageModel = ClassifySingleImage(mlContext, mlModel, filePath);
                     // </SnippetCallClassifySingleImage>
                     
                     imageModel.ImagePath = filePath;
+
+                    return Json(new
+                    {
+                        status = 1,
+                        predicted = imageModel.Predicted,
+                        score = imageModel.Score,
+                        imageurl = imageModel.ImagePath
+                    });
                 }
             }
-            return View(imageModel);
+            return Json(new
+            {
+                status = 0
+            });
         }
 
         [HttpPost]

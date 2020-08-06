@@ -4,6 +4,7 @@
 
 <script>
     var $sentimentupload = $('#uploadTraining'),
+        $uploadImage = $('#uploadImage'),
         $loader = $('#loader'),
         $removeButton = $('#remove-button');
 
@@ -26,9 +27,9 @@
                 success: function (data) {
                     if (data.status == 1) {
                         //$sentimentform.show();
-                        //$removeButton.show();
+                        //$removeButton.show();  error result predicted score
                         alert('Training Complete!');
-                        $('#trainResult').text(data.result);
+                        NextStep();
                     }
 
                     $sentimentupload[0].reset();
@@ -44,6 +45,54 @@
 
             $loader.addClass('show');
         }
+    });
+
+    $uploadImage.on('submit', function (e) {
+        e.preventDefault(); // stop the standard form submission
+
+        if ($(this).find('input[type="file"]').val() == '') {
+            alert('Please select a file!');
+            return;
+        }
+
+        //if (confirm("Are you sure you want to train the model with the attached file? This will take a while.")) {
+            $.ajax({
+                url: '@Url.Action("Index", "ImageClassification")',
+                type: 'POST',
+                data: new FormData(this),
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    
+                    if (data.status == 1) {
+                        //$sentimentform.show();
+                        //$removeButton.show();  error result predicted score
+                        $('.result').show();
+                        if (data.predicted == 'passport')
+                            $('#predicted').text("Passport");
+                        else
+                            $('#predicted').text("Emirates ID");
+                        $('#score').text(data.score);
+                        console.log('imageUrl', data.imageurl);
+                        $('#imgCard').attr('src',"/"+data.imageurl);
+                    }
+                    else {
+                        $('.error').show();
+                    }
+                    $sentimentupload[0].reset();
+                    $loader.removeClass('show');
+                },
+                error: function (xhr, error, status) {
+                    console.log(error, status);
+                    alert('An error has occurred. Please try again!');
+
+                    $loader.removeClass('show');
+                }
+            });
+
+            $loader.addClass('show');
+        //}
     });
     
 </script>
