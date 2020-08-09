@@ -16,23 +16,13 @@ namespace MachineLearningDemo.Controllers
     [Route("/{Controller}/{Action}")]
     public class ImageClassificationController : Controller
     {
-        // <SnippetDeclareGlobalVariables>
-        static readonly string _assetsPath = Path.Combine("assets");
-        static readonly string _imagesFolder = Path.Combine(_assetsPath, "images/passports");
-        //static readonly string _trainTagsTsv = Path.Combine(_imagesFolder, "tags.tsv");
-        static readonly string _trainTagsTsv = Path.Combine(_imagesFolder, "passport_tags.tsv");
-        //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
-        //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
-        //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "p4.PNG");
-        //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "Capture12.PNG");
-        //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "teddy4.jpg");
-        static readonly string _inceptionTensorFlowModel = Path.Combine(_assetsPath, "inception", "tensorflow_inception_graph.pb");
-        //</SnippetDeclareGlobalVariables>
+        
         IHostingEnvironment _hostingEnvironment;
         public ImageClassificationController(IHostingEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
         }
+
         public ActionResult Index()
         {
             return View();
@@ -51,8 +41,9 @@ namespace MachineLearningDemo.Controllers
             //ImageModel imageModel = new ImageModel();
             //if (imageModel != null)
             {
+                var rootPath = _hostingEnvironment.ContentRootPath;
                 string pic = System.IO.Path.GetFileName(formFile.FileName);
-                string filePath = System.IO.Path.Combine("assets/temp", pic);
+                string filePath = System.IO.Path.Combine(@"wwwroot\images\temp", pic);
 
                 using (var stream = System.IO.File.Create(filePath))
                 {
@@ -86,7 +77,7 @@ namespace MachineLearningDemo.Controllers
                         status = 1,
                         predicted = imageModel.Predicted,
                         score = imageModel.Score,
-                        imageurl = imageModel.ImagePath
+                        imageurl = "images/temp/"+ pic
                     });
                 }
             }
@@ -146,6 +137,18 @@ namespace MachineLearningDemo.Controllers
         
         public static ITransformer GenerateModel(MLContext mlContext, string _testTagsTsv, string rootPath)
         {
+            // <SnippetDeclareGlobalVariables>
+            string _assetsPath = Path.Combine(rootPath,"assets");
+            string _imagesFolder = Path.Combine(_assetsPath, "images/passports");
+            //static readonly string _trainTagsTsv = Path.Combine(_imagesFolder, "tags.tsv");
+            string _trainTagsTsv = Path.Combine(_imagesFolder, "passport_tags.tsv");
+            //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
+            //static readonly string _testTagsTsv = Path.Combine(_imagesFolder, "test-tags.tsv");
+            //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "p4.PNG");
+            //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "Capture12.PNG");
+            //static readonly string _predictSingleImage = Path.Combine(_imagesFolder, "teddy4.jpg");
+            string _inceptionTensorFlowModel = Path.Combine(_assetsPath, "inception", "tensorflow_inception_graph.pb");
+            //</SnippetDeclareGlobalVariables>
 
             // <SnippetImageTransforms>
             IEstimator<ITransformer> pipeline = mlContext.Transforms.LoadImages(outputColumnName: "input", imageFolder: _imagesFolder, inputColumnName: nameof(ImageData.ImagePath))

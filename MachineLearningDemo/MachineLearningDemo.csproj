@@ -6,6 +6,10 @@
     <AssemblyName>MachineLearningDemo</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="wwwroot\images\postcard.png" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.Vision.v1" Version="1.48.0.2024" />
@@ -22,6 +26,7 @@
 
 
   <ItemGroup>
+    <None Include="wwwroot\images\postcard.png" />
     <None Include="wwwroot\images\tenor.gif" />
     <None Include="wwwroot\training-files\testData.csv" />
     <None Include="wwwroot\training-files\trainData.csv" />
@@ -31,6 +36,11 @@
   <ItemGroup>
     <ProjectReference Include="..\CreditCardFraudDetection\CreditCardFraudDetection.csproj" />
     <ProjectReference Include="..\Sentiment AnalysisML.Model\Sentiment.AnalysisML.Model.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\temp\" />
   </ItemGroup>
 
 </Project>
