@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CreditCardFraudDetection.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -65,7 +66,7 @@ namespace CreditCardFraudDetection
             app.UseStaticFiles(new StaticFileOptions()
             {
                 FileProvider = new PhysicalFileProvider(
-            Path.Combine(Directory.GetCurrentDirectory(), @"assets")),
+            Path.Combine(FileHelper.BasePath, @"assets")),
                 RequestPath = new PathString("/assets")
             });
         }

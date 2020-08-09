@@ -108,7 +108,7 @@ namespace MachineLearningDemo.Controllers
                 });
             }
             string fileName = System.IO.Path.GetFileName(file.FileName);
-            string filePath = System.IO.Path.Combine("assets/images/passports", fileName);
+            string filePath = System.IO.Path.Combine(rootPath, "assets/images/passports"+fileName);
 
             using (var stream = System.IO.File.Create(filePath))
             {
