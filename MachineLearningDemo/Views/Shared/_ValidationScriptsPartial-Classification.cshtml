@@ -68,17 +68,23 @@
                     if (data.status == 1) {
                         //$sentimentform.show();
                         //$removeButton.show();  error result predicted score
-                        $('.result').show();
-                        if (data.predicted == 'passport')
+                        if (data.predicted == 'passport') {
+                            $('.error').hide();
+                            $('.result').show();
                             $('#predicted').text("Passport");
-                        else
-                            $('#predicted').text("Emirates ID");
-                        $('#score').text(data.score);
-                        console.log('imageUrl', data.imageurl);
-                        $('#imgCard').attr('src',"/"+data.imageurl);
+                            $('#score').text(data.score);
+                            console.log('imageUrl', data.imageurl);
+                            $('#imgCard').attr('src', "/" + data.imageurl);
+                        }
+                        else {
+                            $('.error').show();
+                            $('.result').hide();
+                        }
+                            
                     }
                     else {
                         $('.error').show();
+                        $('.result').hide();
                     }
                     $sentimentupload[0].reset();
                     $loader.removeClass('show');
