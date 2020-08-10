@@ -44,10 +44,11 @@ namespace MachineLearningDemo.Controllers
 
             var viewModel = new TestDataViewModel()
             {
-                FraudList = input.Where(x => x.Class == true && x.Amount > 1).Take(5).ToList(),
+                TransactionList = input.Where(x => x.Class == true && x.Amount > 1).Take(5).ToList(),
                 ValidList = input.Where(x => x.Class == false && x.Amount > 1).Take(5).ToList()
             };
-
+            viewModel.TransactionList.AddRange(viewModel.ValidList);
+            viewModel.TransactionList = viewModel.TransactionList.OrderBy(x => x.Amount).ToList();
             return View(viewModel);
         }
 

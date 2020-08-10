@@ -7,7 +7,7 @@ namespace CreditCardFraudDetection.Models
 {
     public class TestDataViewModel
     {
-        public List<ModelInput> FraudList { get; set; }
+        public List<ModelInput> TransactionList { get; set; }
 
         public List<ModelInput> ValidList { get; set; }
     }

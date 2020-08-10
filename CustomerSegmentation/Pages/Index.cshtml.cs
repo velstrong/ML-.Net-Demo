@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.ML.Data;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace MachineLearning.Pages
 {
@@ -31,7 +33,7 @@ namespace MachineLearning.Pages
 
         }
 
-        public void OnPost(IFormFile file, string train, string predict)
+        public async Task<IActionResult> OnPost(IFormFile file, string train, string predict, string download)
         {
             // var fileName = file.FileName;
             using (var stream = new MemoryStream())
@@ -63,11 +65,77 @@ namespace MachineLearning.Pages
                     }).ToList();
                     var predictions = segmentator.Predict(businessData);
                     var predictedCustomers = calculatedScores.Select((t, i) => new PredictionResult
-                    { CustomerId = t.CustomerId.ToString(), R=t.R,F=t.F,M=t.M, Cluster = predictions[i] }).ToList();
+                    { CustomerId = t.CustomerId.ToString(), R = t.R, F = t.F, M = t.M, Cluster = predictions[i] }).ToList();
                     ViewData["PredictedCustomers"] = predictedCustomers;
 
                 }
+                else if (!string.IsNullOrEmpty(download))
+                {
+                    var businessData = calculatedScores.Select(x => new ClusteringData
+                    {
+                        R = x.R,
+                        F = x.F,
+                        M = x.M
+                    }).ToList();
+                    var predictions = segmentator.Predict(businessData);
+                    var predictedCustomers = calculatedScores.Select((t, i) => new PredictionResult
+                    { CustomerId = t.CustomerId.ToString(), R = t.R, F = t.F, M = t.M, Cluster = predictions[i] }).ToList();
+                    ViewData["PredictedCustomers"] = predictedCustomers;
+                    var groupedCustomers = predictedCustomers.GroupBy(x => x.Cluster);
+                    ExcelPackage excel = new ExcelPackage();
+                    foreach (var group in groupedCustomers)
+                    {
+                        var workSheet = excel.Workbook.Worksheets.Add("Cluster" + group.Key.ToString());
+                        workSheet.TabColor = System.Drawing.Color.Black;
+                        workSheet.DefaultRowHeight = 12;
+                        //Header of table  
+                        //  
+                        workSheet.Row(1).Height = 20;
+                        workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        workSheet.Row(1).Style.Font.Bold = true;
+                        workSheet.Cells[1, 1].Value = "CustomerID";
+                        workSheet.Cells[1, 2].Value = "R";
+                        workSheet.Cells[1, 3].Value = "F";
+                        workSheet.Cells[1, 4].Value = "M";
+                        //Body of table  
+                        //  
+                        int recordIndex = 2;
+                        foreach (var customer in group)
+                        {
+                            workSheet.Cells[recordIndex, 1].Value = customer.CustomerId;
+                            workSheet.Cells[recordIndex, 2].Value = customer.R;
+                            workSheet.Cells[recordIndex, 3].Value = customer.F;
+                            workSheet.Cells[recordIndex, 4].Value = customer.M;
+                            recordIndex++;
+                        }
+                        workSheet.Column(1).AutoFit();
+                        workSheet.Column(2).AutoFit();
+                        workSheet.Column(3).AutoFit();
+                        workSheet.Column(4).AutoFit();
+                    }
+                    string excelName = "ClusteredData.xlsx";
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        excel.SaveAs(memoryStream);
+                        var content = memoryStream.ToArray();
+
+                        return File(
+                            content,
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                           excelName);
+                    }
+                    //using (var memoryStream = new MemoryStream())
+                    //{
+                    //    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    //    Response.Headers.Add("content-disposition", "attachment; filename=" + excelName + ".xlsx");
+                    //    excel.SaveAs(memoryStream);
+                    //    Response.OutputStream. memoryStream.WriteTo();
+                    //    Response.Flush();
+                    //    Response.End();
+                    //}
+                }
             }
+            return null;
         }
     }
 }

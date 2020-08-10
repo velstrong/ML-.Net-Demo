@@ -43,7 +43,7 @@ namespace MachineLearningDemo.Controllers
             {
                 var rootPath = _hostingEnvironment.ContentRootPath;
                 string pic = System.IO.Path.GetFileName(formFile.FileName);
-                string filePath = System.IO.Path.Combine(@"wwwroot\images\temp", pic);
+                string filePath = System.IO.Path.Combine(rootPath,@"wwwroot\images\temp", pic);
 
                 using (var stream = System.IO.File.Create(filePath))
                 {

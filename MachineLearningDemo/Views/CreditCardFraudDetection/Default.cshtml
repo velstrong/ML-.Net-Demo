@@ -116,8 +116,8 @@
 
                 <div id="samples" class="row">
                     <div class="col-6">
-                        <h4>Fraud Samples</h4>
-                        <p style="min-height: 100px">The following samples are already defined as fraud. We want to test our model if it can accurately predict that they are fraud.</p>
+                        <h4>Sample Transaction</h4>
+                        @*<p style="min-height: 100px">The following samples are already defined as fraud. We want to test our model if it can accurately predict that they are fraud.</p>*@
 
                         <table>
                             <tr>
@@ -137,7 +137,7 @@
 
                             @{
                                 var fraudCounter = 0;
-                                foreach (var fraud in Model.FraudList)
+                                foreach (var fraud in Model.TransactionList)
                                 {
                                     <tr>
                                         <td>Sample @(++fraudCounter)</td>
@@ -156,7 +156,7 @@
                         </table>
                     </div>
 
-                    <div class="col-6">
+                    @*<div class="col-6">
                         <h4>Valid Samples</h4>
                         <p style="min-height: 100px">The following samples are valid transactions.</p>
 
@@ -194,7 +194,7 @@
                                 }
                             }
                         </table>
-                    </div>
+                    </div>*@
                 </div>
 
                 <br />
