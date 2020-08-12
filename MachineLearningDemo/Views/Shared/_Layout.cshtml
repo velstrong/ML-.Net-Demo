@@ -250,7 +250,14 @@
         #Semantic-Analysis__body main {
             --color: #6388b5;
         }
+        #CallRegression-Analysis__body .content__container {
+            background: url(/images/performing-twitter-sentiment-analysis1.png) bottom right no-repeat;
+            background-size: 350px;
+        }
 
+        #CallRegression-Analysis__body main {
+            --color: #6388b5;
+        }
         #CreditCardFraudDetection-Default__body .content__container {
             background: url(/images/fraud-protection.png) bottom right no-repeat;
             background-size: 200px;
@@ -299,6 +306,9 @@
                         <a asp-area="" asp-controller="CamGoogle" asp-action="Capture" id="CamGoogle-Capture">Google Vision</a>
                     </li>
                     <li class="nav-item">
+                        <a asp-area="" asp-controller="CallRegression" asp-action="Analysis" id="CamGoogle-Capture">Call Regression</a>
+                    </li>
+                    <li class="nav-item">
                         <a href="https://localhost:44362/" target="_blank">Customer Segmentation</a>
                     </li>
                     <!-- ADD MORE HERE -->
@@ -320,6 +330,7 @@
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
     </environment>
     <environment exclude="Development">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"

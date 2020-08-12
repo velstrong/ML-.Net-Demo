@@ -46,6 +46,13 @@ namespace MachineLearningDemo.Helpers
                 return "/assets/output/SentimentMLModel.zip";
             }
         }
+        public static string RegressionModelPath
+        {
+            get
+            {
+                return "/assets/output/RegressionMLModel.zip";
+            }
+        }
         public static string UploadPath
         {
             get
