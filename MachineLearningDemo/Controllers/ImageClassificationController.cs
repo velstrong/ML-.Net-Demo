@@ -234,8 +234,12 @@ namespace MachineLearningDemo.Controllers
 
             ImageModel _image = new ImageModel();
 
-            _image.Predicted = prediction.PredictedLabelValue;
             _image.Score = prediction.Score.Max();
+
+            if (_image.Score > 0.55)
+                _image.Predicted = prediction.PredictedLabelValue;
+            else
+                _image.Predicted = "wrong";
 
             return _image;
             //Console.WriteLine("=============== Making single image classification ==============="); 
