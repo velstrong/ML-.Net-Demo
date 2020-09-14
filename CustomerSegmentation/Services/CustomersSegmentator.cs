@@ -95,8 +95,8 @@ namespace MachineLearning.Services
             }
 
             // save RFM cluster matching in csv
-            //var fileService = new FileService();
-            //fileService.ExportToCsv(tests);
+            var fileService = new FileService();
+            fileService.ExportToCsv(tests);
             return metrics;
         }
 
