@@ -1,0 +1,179 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Button, Form, Input , Spin, Modal } from '@arco-design/web-react';
+import { Footer } from 'antd/lib/layout/layout';
+import { Width } from 'easy-email-extensions';
+const TextArea = Input.TextArea;
+interface ChatGPTProps {
+  isvisible: boolean;
+}
+const ChatGPT = ({
+    isvisible,
+  }: ChatGPTProps) => {
+  const [input, setInput] = useState('');
+  const [response, setResponse] = useState('');
+ const [visible, setVisible] = useState(isvisible);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState([]);
+  const sendMessage = async () => {
+    try {
+      const apiUrl = 'https://api.openai.com/v1/chat/completions'; // Update with the correct API endpoint
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      };
+      setLoading(true);
+      const requestBody = {
+        model: "gpt-4o",
+        messages: [{ role: 'user', content: input }],
+      };
+
+      const { data } = await axios.post(apiUrl, requestBody, { headers });
+
+      setResponse(data.choices[0].message.content);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error('Error sending message:', error);
+    }
+  };
+  const getMessage = async (message:any) => {
+    try {
+      const apiUrl = 'https://api.openai.com/v1/chat/completions'; // Update with the correct API endpoint
+     
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      };
+      setLoading(true);
+      const requestBody = {
+        model: "gpt-4o",
+        messages: message,
+      };
+
+      const { data } = await axios.post(apiUrl, requestBody, { headers });
+
+      setResponse(data.choices[0].message.content);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error('Error sending message:', error);
+    }
+  };
+  const getImproveWriting = async() => {
+    getMessage([
+      {
+        role: "system",
+        content: "Answer the question based on the context below.",
+      },
+      {
+        role: "system",
+        content:
+          "The response should preserve any HTML formatting, links, and styles in the context.",
+      },
+      {
+        role: "user",
+        content: `Question: Rewrite this content with no spelling mistakes, proper grammar, and with more descriptive language, using best writing practices without losing the original meaning. Context: ${input}`,
+      },
+    ]);
+}
+const getSimplifyLanguage = async() => {
+    getMessage([
+        {
+          role: "system",
+          content: "Answer the question based on the context below.",
+        },
+        {
+          role: "system",
+          content:
+            "The response should preserve any HTML formatting, links, and styles in the context.",
+        },
+        {
+          role: "user",
+          content: `Question: Rewrite this content with simplified language and reduce the complexity of the writing, so that the content is easier to understand. Context: ${input}`,
+        },
+      ]);
+}
+const getExtendUpon = async() => {
+    getMessage([
+        {
+          role: "system",
+          content: "Answer the question based on the context below.",
+        },
+        {
+          role: "system",
+          content:
+            "The response should preserve any HTML formatting, links, and styles in the context.",
+        },
+        {
+          role: "user",
+          content: `Question: Expand upon this content with descriptive language and more detailed explanations, to make the writing easier to understand and increase the length of the content. Context: ${input}`,
+        },
+      ]);
+}
+const getTrimContent = async() => {
+    getMessage([
+        {
+          role: "system",
+          content: "Answer the question based on the context below.",
+        },
+        {
+          role: "system",
+          content:
+            "The response should preserve any HTML formatting, links, and styles in the context.",
+        },
+        {
+          role: "user",
+          content: `Question: Expand upon this content with descriptive language and more detailed explanations, to make the writing easier to understand and increase the length of the content. Context: ${input}`,
+        },
+      ]);
+}
+const getSummarizeContent = async() => {
+    getMessage([
+        {
+          role: "system",
+          content: "Answer the question based on the context below.",
+        },
+        {
+          role: "system",
+          content:
+            "The response should preserve any HTML formatting, links, and styles in the context.",
+        },
+        {
+          role: "user",
+          content: `Question: Provide the key points and concepts in this content in a succinct summary. Context: ${input}`,
+        },
+      ]);
+}
+  return (
+    <>
+      <Modal
+        okText="Send"
+        footer={null}
+        hideCancel={true}
+        title="Chat GPT Assistant"
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        onOk={sendMessage}
+        okButtonProps={{ loading: loading }}
+      >
+          <Spin loading={loading}>
+        <div>
+        <p style={{width:450,height:200}} >{response}</p>
+      </div>
+      <Button onClick={getImproveWriting}>Improve writing</Button>
+      <Button onClick={getSimplifyLanguage}>Simplify language</Button>
+      <Button onClick={getExtendUpon}>Expand upon</Button>
+      <Button onClick={getTrimContent}>Trim content</Button>
+      <Button onClick={getSummarizeContent}>Summarize content</Button>
+      <br/>
+      </Spin>
+      <Input value={input}
+            onChange={setInput} placeholder='Ask AI to edit or generate...' style={{width: 430 }} />
+            <Button onClick={sendMessage} ><svg fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 48 48" aria-hidden="true" focusable="false" className="arco-icon arco-icon-send"><path stroke-miterlimit="3.864" d="m14 24-7-5V7l34 17L7 41V29l7-5Zm0 0h25"></path></svg></Button>
+      </Modal>
+    </>
+  );
+};
+
+export default ChatGPT;
