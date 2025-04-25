@@ -27,7 +27,7 @@
     "react-dom": "^18.2.0",
     "react-final-form": "^6.5.7",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.4.1",
+    "react-router-dom": "^7.5.2",
     "react-sortablejs": "^6.0.0",
     "react-use": "^17.4.0",
     "save": "^2.9.0"
